@@ -1,0 +1,424 @@
+{
+  "name": "Demo 1 - Calificador de Leads v3",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 16],
+      "id": "dfc561f1-f4fd-4a6b-8c64-2db5c9731a16",
+      "name": "Webhook",
+      "webhookId": "18f0b945-0599-4872-9fea-593afc4d1822"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{$json.body.mensaje}}",
+        "options": {
+          "systemMessage": "=<role>\nSos un asistente especializado en calificar leads para empresas.\nTu tarea es analizar consultas entrantes y clasificarlas.\n</role>\n\n<instrucciones>\nAnalizá el mensaje del lead y respondé ÚNICAMENTE con un JSON con este formato exacto:\n\n{\n  \"clasificacion\": \"CALIENTE\" | \"TIBIO\" | \"FRÍO\",\n  \"nombre\": \"nombre del lead o 'Desconocido'\",\n  \"interes\": \"resumen en una línea de qué quiere\",\n  \"urgencia\": \"ALTA\" | \"MEDIA\" | \"BAJA\",\n  \"accion_recomendada\": \"qué debería hacer el dueño del negocio\",\n  \"respuesta_automatica\": \"mensaje personalizado y cálido para enviarle al lead\"\n}\n</instrucciones>\n\n<criterios>\nCALIENTE: quiere comprar/contratar pronto, tiene presupuesto, pregunta por precios o disponibilidad\nTIBIO: interesado pero sin urgencia clara, pide información general\nFRÍO: solo curiosidad, sin intención clara de compra\n</criterios>\n\nIMPORTANTE: Devuelve ÚNICAMENTE el JSON puro. Sin markdown, sin backticks, sin ```json. Solo el objeto JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [240, 16],
+      "id": "733a1652-438a-409f-92e2-b0128fbaa848",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-5-20250929",
+          "cachedResultName": "Claude Sonnet 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [240, 224],
+      "id": "f61477a3-c99e-4514-86ad-b9412b1dfb4f",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "gIk7ZNP0GZfYzIq2",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output;\nconst cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\nconst parsed = JSON.parse(cleaned);\n\nreturn [{\n  json: {\n    clasificacion: parsed.clasificacion,\n    nombre: parsed.nombre,\n    interes: parsed.interes,\n    urgencia: parsed.urgencia,\n    accion_recomendada: parsed.accion_recomendada,\n    respuesta_automatica: parsed.respuesta_automatica\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 16],
+      "id": "4f20cb82-fc5d-4cfa-90de-352f99f236f9",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Fecha": "={{$now.toISO()}}",
+            "Nombre": "={{$json.nombre}}",
+            "Clasificacion": "={{$json.clasificacion}}",
+            "Interes": "={{$json.interes}}",
+            "Urgencia": "={{$json.urgencia}}",
+            "Accion_Recomendada": "={{$json.accion_recomendada}}",
+            "Respuesta_Automatica": "={{$json.respuesta_automatica}}",
+            "Mensaje_Original": "={{$('Webhook').item.json.body.mensaje}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "Fecha", "displayName": "Fecha", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Nombre", "displayName": "Nombre", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Clasificacion", "displayName": "Clasificacion", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Interes", "displayName": "Interes", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Urgencia", "displayName": "Urgencia", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Accion_Recomendada", "displayName": "Accion_Recomendada", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Respuesta_Automatica", "displayName": "Respuesta_Automatica", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Mensaje_Original", "displayName": "Mensaje_Original", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [720, 16],
+      "id": "45474ec4-8a98-4f1d-b54a-6018ba66a159",
+      "name": "Guardar en Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gyW06kIGHrVcojUq",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$('Webhook').item.json.body.email}}",
+        "subject": "={{$('Code in JavaScript').item.json.clasificacion === 'CALIENTE' ? 'Recibimos tu consulta — te contactamos hoy' : $('Code in JavaScript').item.json.clasificacion === 'TIBIO' ? 'Recibimos tu consulta — te respondemos pronto' : 'Gracias por contactarnos'}}",
+        "message": "={{$('Code in JavaScript').item.json.respuesta_automatica}}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [960, 16],
+      "id": "e5f6a7b8-c9d0-1234-efab-345678901234",
+      "name": "Email al Lead",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-caliente-001",
+              "leftValue": "={{$('Code in JavaScript').item.json.clasificacion}}",
+              "rightValue": "CALIENTE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1200, 16],
+      "id": "f6a7b8c9-d0e1-2345-fabc-456789012345",
+      "name": "¿Lead CALIENTE?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Code in JavaScript').item.json;\nconst msg = $('Webhook').item.json.body.mensaje;\n\nconst html = `<div style=\"font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #f7fafc; padding: 24px; border-radius: 8px;\"><div style=\"background: white; border-radius: 8px; padding: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);\"><h2 style=\"margin: 0 0 8px 0; color: #c53030; font-size: 22px;\">🔥 Lead CALIENTE</h2><p style=\"margin: 0 0 24px 0; color: #718096; font-size: 14px;\">Acción requerida — este lead quiere comprar pronto</p><table style=\"width: 100%; border-collapse: collapse; font-size: 15px;\"><tr style=\"border-bottom: 1px solid #fed7d7;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; width: 38%; background: #fff5f5;\">Nombre</td><td style=\"padding: 14px 16px; color: #1a202c; background: #fff5f5;\">${d.nombre}</td></tr><tr style=\"border-bottom: 1px solid #e2e8f0;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568;\">Qué quiere</td><td style=\"padding: 14px 16px; color: #1a202c;\">${d.interes}</td></tr><tr style=\"border-bottom: 1px solid #fed7d7;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; background: #fff5f5;\">Urgencia</td><td style=\"padding: 14px 16px; font-weight: 700; color: #c53030; background: #fff5f5;\">${d.urgencia}</td></tr><tr style=\"border-bottom: 1px solid #e2e8f0;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568;\">Acción recomendada</td><td style=\"padding: 14px 16px; color: #1a202c;\">${d.accion_recomendada}</td></tr><tr><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; background: #fffff0; vertical-align: top;\">Mensaje original</td><td style=\"padding: 14px 16px; color: #718096; font-style: italic; background: #fffff0;\">${msg}</td></tr></table><p style=\"margin: 24px 0 0 0; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #a0aec0; font-size: 12px; text-align: center;\">Generado automáticamente · Calificador de Leads n8n</p></div></div>`;\n\nreturn [{ json: { ...d, htmlBody: html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, -160],
+      "id": "d1e2f3a4-b5c6-7890-defa-123456789abc",
+      "name": "Armar HTML Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "ignacionogpa@gmail.com",
+        "subject": "🔥 Lead CALIENTE — acción requerida",
+        "message": "={{$json.htmlBody}}",
+        "options": {
+          "appendAttribution": false,
+          "emailType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1680, -160],
+      "id": "a7b8c9d0-e1f2-3456-abcd-567890123456",
+      "name": "Alerta al Dueño",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-tibio-001",
+              "leftValue": "={{$('Code in JavaScript').item.json.clasificacion}}",
+              "rightValue": "TIBIO",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1440, 160],
+      "id": "if-tibio-001",
+      "name": "¿Lead TIBIO?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('Code in JavaScript').item.json;\nconst msg = $('Webhook').item.json.body.mensaje;\n\nconst html = `<div style=\"font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #f7fafc; padding: 24px; border-radius: 8px;\"><div style=\"background: white; border-radius: 8px; padding: 28px; border-left: 4px solid #d69e2e; box-shadow: 0 2px 8px rgba(0,0,0,0.08);\"><h2 style=\"margin: 0 0 8px 0; color: #d69e2e; font-size: 22px;\">🟡 Lead TIBIO</h2><p style=\"margin: 0 0 24px 0; color: #718096; font-size: 14px;\">Interesado pero sin urgencia — vale la pena hacer seguimiento esta semana</p><table style=\"width: 100%; border-collapse: collapse; font-size: 15px;\"><tr style=\"border-bottom: 1px solid #fefcbf;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; width: 38%; background: #fffff0;\">Nombre</td><td style=\"padding: 14px 16px; color: #1a202c; background: #fffff0;\">${d.nombre}</td></tr><tr style=\"border-bottom: 1px solid #e2e8f0;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568;\">Qué quiere</td><td style=\"padding: 14px 16px; color: #1a202c;\">${d.interes}</td></tr><tr style=\"border-bottom: 1px solid #fefcbf;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; background: #fffff0;\">Urgencia</td><td style=\"padding: 14px 16px; color: #d69e2e; background: #fffff0; font-weight: 700;\">${d.urgencia}</td></tr><tr style=\"border-bottom: 1px solid #e2e8f0;\"><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568;\">Acción recomendada</td><td style=\"padding: 14px 16px; color: #1a202c;\">${d.accion_recomendada}</td></tr><tr><td style=\"padding: 14px 16px; font-weight: 700; color: #4a5568; background: #f7fafc; vertical-align: top;\">Mensaje original</td><td style=\"padding: 14px 16px; color: #718096; font-style: italic; background: #f7fafc;\">${msg}</td></tr></table><p style=\"margin: 24px 0 0 0; padding-top: 16px; border-top: 1px solid #e2e8f0; color: #a0aec0; font-size: 12px; text-align: center;\">Generado automáticamente · Calificador de Leads n8n</p></div></div>`;\n\nreturn [{ json: { ...d, htmlBody: html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 80],
+      "id": "tibio-code-001",
+      "name": "Armar HTML TIBIO"
+    },
+    {
+      "parameters": {
+        "sendTo": "ignacionogpa@gmail.com",
+        "subject": "🟡 Lead TIBIO — seguimiento recomendado",
+        "message": "={{$json.htmlBody}}",
+        "options": {
+          "appendAttribution": false,
+          "emailType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1920, 80],
+      "id": "tibio-gmail-001",
+      "name": "Alerta Lead TIBIO",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [2160, 16],
+      "id": "254b5646-c6c8-4c91-9a0b-262d9eb94aed",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 500],
+      "id": "err-trigger-001",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const error = $input.first().json;\nconst nodo = error.execution?.lastNodeExecuted || 'Desconocido';\nconst mensaje = error.execution?.error?.message || 'Error desconocido';\nconst timestamp = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Mendoza' });\n\nconst html = `<div style=\"font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px;\"><div style=\"background: white; border-radius: 8px; padding: 28px; border-left: 4px solid #e53e3e; box-shadow: 0 2px 8px rgba(0,0,0,0.08);\"><h2 style=\"margin: 0 0 8px 0; color: #e53e3e;\">⚠️ Error en Calificador de Leads</h2><p style=\"margin: 0 0 20px 0; color: #718096;\">El workflow falló y necesita revisión</p><table style=\"width: 100%; border-collapse: collapse; font-size: 15px;\"><tr style=\"border-bottom: 1px solid #fed7d7; background: #fff5f5;\"><td style=\"padding: 12px 16px; font-weight: 700; color: #4a5568; width: 35%;\">Nodo que falló</td><td style=\"padding: 12px 16px; color: #c53030; font-weight: 700;\">${nodo}</td></tr><tr style=\"border-bottom: 1px solid #e2e8f0;\"><td style=\"padding: 12px 16px; font-weight: 700; color: #4a5568;\">Error</td><td style=\"padding: 12px 16px; color: #1a202c;\">${mensaje}</td></tr><tr><td style=\"padding: 12px 16px; font-weight: 700; color: #4a5568; background: #f7fafc;\">Timestamp</td><td style=\"padding: 12px 16px; color: #718096; background: #f7fafc;\">${timestamp}</td></tr></table><p style=\"margin: 20px 0 0 0; color: #718096; font-size: 13px;\">Revisá el workflow en <a href=\"http://localhost:5678\" style=\"color: #3182ce;\">localhost:5678</a></p></div></div>`;\n\nreturn [{ json: { htmlError: html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 500],
+      "id": "err-format-001",
+      "name": "Formatear Error"
+    },
+    {
+      "parameters": {
+        "sendTo": "ignacionogpa@gmail.com",
+        "subject": "⚠️ Error en Calificador de Leads — revisar ahora",
+        "message": "={{$json.htmlError}}",
+        "options": {
+          "appendAttribution": false,
+          "emailType": "html"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [480, 500],
+      "id": "err-gmail-001",
+      "name": "Alerta Error",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
+          "name": "Gmail OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🎨 Formato condicional en Sheets\n\nConfigurar **una sola vez** en tu hoja:\n\n1. Seleccioná la columna **Clasificacion** (col. C)\n2. Formato → Formato condicional\n3. Crear 3 reglas:\n\n🔴 Texto = **CALIENTE** → fondo `#ea4335`\n🟡 Texto = **TIBIO** → fondo `#fbbc04`\n🟢 Texto = **FRÍO** → fondo `#34a853`\n\nListo — se aplica a todas las filas automáticamente.",
+        "height": 240,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [720, 250],
+      "id": "b8c9d0e1-f2a3-4567-bcde-678901234567",
+      "name": "Sticky Note - Formato Sheets"
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ Credenciales necesarias\n\nAntes de activar, configurá en n8n:\n\n**Settings → Credentials → New**\n\n1. **Gmail OAuth2** (x4 nodos)\n   → Email al Lead\n   → Alerta al Dueño (CALIENTE)\n   → Alerta Lead TIBIO\n   → Alerta Error\n\n2. **Anthropic API** ✅ ya configurada\n\n3. **Google Sheets OAuth2** ✅ ya configurada\n\nReemplazá `REEMPLAZAR_CON_TU_CREDENTIAL_ID` con el ID real de tu credencial Gmail.",
+        "height": 280,
+        "width": 340,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [960, 250],
+      "id": "c9d0e1f2-a3b4-5678-cdef-789012345678",
+      "name": "Sticky Note - Setup"
+    },
+    {
+      "parameters": {
+        "content": "## 🆕 Novedades v3\n\n✅ **Error Trigger** agregado\n→ Si el workflow falla, te llega un email con qué nodo falló y el error exacto\n\n✅ **Notificación TIBIO** agregada\n→ Los leads TIBIOS ya no desaparecen — te llega un email amarillo para hacer seguimiento esta semana\n\n✅ **Flujo completo por clasificación:**\n🔴 CALIENTE → email rojo urgente al dueño\n🟡 TIBIO → email amarillo de seguimiento\n🟢 FRÍO → solo se guarda en Sheets",
+        "height": 260,
+        "width": 340,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, 260],
+      "id": "v3-changes-note",
+      "name": "Sticky Note - Cambios v3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "AI Agent", "type": "main", "index": 0 }]]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [[{ "node": "AI Agent", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "AI Agent": {
+      "main": [[{ "node": "Code in JavaScript", "type": "main", "index": 0 }]]
+    },
+    "Code in JavaScript": {
+      "main": [[{ "node": "Guardar en Sheets", "type": "main", "index": 0 }]]
+    },
+    "Guardar en Sheets": {
+      "main": [[{ "node": "Email al Lead", "type": "main", "index": 0 }]]
+    },
+    "Email al Lead": {
+      "main": [[{ "node": "¿Lead CALIENTE?", "type": "main", "index": 0 }]]
+    },
+    "¿Lead CALIENTE?": {
+      "main": [
+        [{ "node": "Armar HTML Email", "type": "main", "index": 0 }],
+        [{ "node": "¿Lead TIBIO?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Armar HTML Email": {
+      "main": [[{ "node": "Alerta al Dueño", "type": "main", "index": 0 }]]
+    },
+    "Alerta al Dueño": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    },
+    "¿Lead TIBIO?": {
+      "main": [
+        [{ "node": "Armar HTML TIBIO", "type": "main", "index": 0 }],
+        [{ "node": "Respond to Webhook", "type": "main", "index": 0 }]
+      ]
+    },
+    "Armar HTML TIBIO": {
+      "main": [[{ "node": "Alerta Lead TIBIO", "type": "main", "index": 0 }]]
+    },
+    "Alerta Lead TIBIO": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
+    },
+    "Error Trigger": {
+      "main": [[{ "node": "Formatear Error", "type": "main", "index": 0 }]]
+    },
+    "Formatear Error": {
+      "main": [[{ "node": "Alerta Error", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "v3-fixed-2026-05-17",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "c4251aa8a8ac87b16d15c56cc78933f3b12e612e5022c4ebabdc15e41a72277f"
+  },
+  "id": "6fGHxoi3UJFST3KC",
+  "tags": [
+    { "updatedAt": "2026-05-17T00:00:00.000Z", "createdAt": "2026-04-23T14:12:49.642Z", "id": "amEWiqJ52Q51PFmb", "name": "Claude" },
+    { "updatedAt": "2026-05-17T00:00:00.000Z", "createdAt": "2026-04-23T14:12:57.642Z", "id": "bcfNeDc5EgZOR8fl", "name": "Anthropic" },
+    { "updatedAt": "2026-05-17T00:00:00.000Z", "createdAt": "2026-04-23T14:12:42.642Z", "id": "m4qtlKUd77tXPygw", "name": "Leads" },
+    { "updatedAt": "2026-05-17T00:00:00.000Z", "createdAt": "2026-04-23T14:12:47.642Z", "id": "s2pyQCIomm0CuJw3", "name": "Javascript" }
+  ]
+}
