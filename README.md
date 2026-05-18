@@ -1,5 +1,12 @@
 # ⚡ Accelerate.ai — Kit de Automatizaciones n8n
 
+![n8n](https://img.shields.io/badge/n8n-2.6.3-orange?style=flat-square&logo=n8n)
+![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-6B48FF?style=flat-square&logo=anthropic)
+![Workflows](https://img.shields.io/badge/workflows-1-brightgreen?style=flat-square)
+![Status](https://img.shields.io/badge/status-active-success?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
+![LATAM](https://img.shields.io/badge/market-LATAM-red?style=flat-square)
+
 Repositorio oficial de workflows de automatización con IA para la agencia **Accelerate.ai**.
 
 Cada workflow está construido con **n8n + Claude (Anthropic)** y listo para importar en cualquier instancia de n8n.
