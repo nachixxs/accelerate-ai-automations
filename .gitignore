@@ -1,1 +1,7 @@
 .mcp.json
+.DS_Store
+node_modules/
+*.env
+CONTEXTO.md
+CLAUDE.md
+templates/prompt-templates.md
