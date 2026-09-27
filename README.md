@@ -1,80 +1,43 @@
-# ⚡ Accelerate.ai — Kit de Automatizaciones n8n
+# Accelerate.ai automations
 
-![n8n](https://img.shields.io/badge/n8n-2.6.3-orange?style=flat-square&logo=n8n)
-![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-6B48FF?style=flat-square&logo=anthropic)
-![Workflows](https://img.shields.io/badge/workflows-1-brightgreen?style=flat-square)
-![Status](https://img.shields.io/badge/status-active-success?style=flat-square)
-![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
-![LATAM](https://img.shields.io/badge/market-LATAM-red?style=flat-square)
+n8n workflows and prompt templates used as demos by Accelerate.ai, my AI automation agency. Each workflow is an exported n8n JSON file you can import into your own instance. Prompts, emails and node names are in Spanish.
 
-Repositorio oficial de workflows de automatización con IA para la agencia **Accelerate.ai**.
+## Workflows
 
-Cada workflow está construido con **n8n + Claude (Anthropic)** y listo para importar en cualquier instancia de n8n.
+### Lead qualifier (v3)
 
----
+File: [`workflows/lead-management/Demo_1_-_Calificador_de_Leads_v3.json`](workflows/lead-management/Demo_1_-_Calificador_de_Leads_v3.json)
 
-## 🛠️ Stack
+- **Trigger:** `POST /leads` webhook with `nombre`, `email` and `mensaje` in the body.
+- **Classification:** an n8n AI Agent node with the Anthropic chat model (Claude Sonnet 4.5) reads the message and returns JSON: `clasificacion` (`CALIENTE` / `TIBIO` / `FRÍO`: hot, warm, cold), name, interest, urgency, recommended action and a suggested reply to the lead. A Code node strips stray markdown fences and parses that JSON.
+- **Storage:** appends a row to Google Sheets (date, name, classification, interest, urgency, recommended action, reply, original message).
+- **Reply:** sends the lead an email through Gmail, with a subject that depends on the classification.
+- **Routing:** hot leads trigger an urgent HTML email to the business owner, warm leads a follow-up email; cold leads are only stored. The webhook then answers `OK`.
+- **Errors:** a separate Error Trigger branch formats the failed node and error message and emails an alert.
 
-- **Motor de automatización:** n8n (self-hosted)
-- **IA:** Claude Sonnet 4.6 (Anthropic API)
-- **Base de datos:** Google Sheets
-- **Email:** Gmail OAuth2
-- **Mensajería:** WhatsApp Business API / Twilio
+The folder's [README](workflows/lead-management/README.md) (Spanish) has a test payload and setup details.
 
----
+### WhatsApp bot (placeholder)
 
-## 📁 Estructura
+`workflows/whatsapp-bots/Demo_2_WhatsApp_Bot_v1.json` is an empty placeholder. There is no WhatsApp workflow in this repo yet.
 
-```
-accelerate-ai-automations/
-├── skills/                          # Skills especializadas para Claude Code
-├── templates/                       # Prompts y templates reutilizables
-├── workflows/
-│   ├── lead-management/             # Calificación y seguimiento de leads
-│   ├── whatsapp-bots/               # Bots de WhatsApp para negocios
-│   └── reportes/                    # Reportes automáticos programados
-└── docs/                            # Documentación visual de workflows
-```
+## Other files
 
----
+- [`templates/prompt-templates.md`](templates/prompt-templates.md): system prompts for lead qualification (generic, restaurants, clinics, real estate), a conversational WhatsApp bot and a weekly report generator.
+- [`skills/05-automatizaciones-n8n.md`](skills/05-automatizaciones-n8n.md): a Claude Code skill for designing and reviewing n8n workflows through the n8n MCP server.
 
-## 🤖 Workflows disponibles
+## How to import
 
-| Workflow | Versión | Nicho | Estado |
-|---|---|---|---|
-| Calificador de Leads | v3 | Universal | ✅ Producción |
-| WhatsApp Bot | v1 | Universal | 🔨 En construcción |
+1. In n8n: **Workflows > Import from file** and pick the JSON.
+2. Create your own credentials (Anthropic API, Gmail OAuth2, Google Sheets OAuth2) and select them in the nodes. The Gmail nodes ship with a `REEMPLAZAR_CON_TU_CREDENTIAL_ID` placeholder.
+3. Point the "Guardar en Sheets" node to your own spreadsheet and change the recipient address in the owner alert nodes.
+4. The Error Trigger only fires if this workflow is selected as an error workflow (Workflow settings > Error workflow); the export does not set one.
+5. Activate the workflow and send a test `POST` to the webhook.
 
----
+## Stack
 
-## 🚀 Cómo usar un workflow
+n8n (self-hosted), Claude via the n8n Anthropic node, Google Sheets, Gmail.
 
-1. Abrís tu n8n → **Workflows → Import from file**
-2. Seleccionás el archivo `.json` del workflow
-3. Configurás las credenciales necesarias (ver README de cada workflow)
-4. Activás el workflow
+## Contact
 
----
-
-## ⚙️ Credenciales necesarias
-
-La mayoría de los workflows requieren:
-
-- **Anthropic API Key** → [console.anthropic.com](https://console.anthropic.com)
-- **Gmail OAuth2** → configurar en n8n Settings → Credentials
-- **Google Sheets OAuth2** → configurar en n8n Settings → Credentials
-- **WhatsApp Business API** → [Meta for Developers](https://developers.facebook.com)
-
----
-
-## 🔒 Seguridad
-
-El archivo `.mcp.json` contiene credenciales locales y está en `.gitignore` — nunca se sube a este repositorio.
-
----
-
-## 📬 Contacto
-
-**Nacho — Accelerate.ai**
-- GitHub: [@nachixxs](https://github.com/nachixxs)
-- LinkedIn: [Ignacio Noguerol](https://linkedin.com/in/ignacio-noguerol-54aa942b0)
+Ignacio Noguerol, [@nachixxs](https://github.com/nachixxs)
