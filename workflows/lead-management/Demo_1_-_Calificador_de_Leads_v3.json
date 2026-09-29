@@ -12,8 +12,7 @@
       "typeVersion": 2.1,
       "position": [0, 16],
       "id": "dfc561f1-f4fd-4a6b-8c64-2db5c9731a16",
-      "name": "Webhook",
-      "webhookId": "18f0b945-0599-4872-9fea-593afc4d1822"
+      "name": "Webhook"
     },
     {
       "parameters": {
@@ -46,7 +45,7 @@
       "name": "Anthropic Chat Model",
       "credentials": {
         "anthropicApi": {
-          "id": "gIk7ZNP0GZfYzIq2",
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
           "name": "Anthropic account"
         }
       }
@@ -66,17 +65,17 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU",
+          "value": "YOUR_GOOGLE_SHEET_ID",
           "mode": "list",
           "cachedResultName": "Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Leads",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1P1dSpKGSgwdLEagmavwMjEEIRLqGFEhD8mhCnTyLPSU/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_GOOGLE_SHEET_ID/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -113,7 +112,7 @@
       "name": "Guardar en Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "gyW06kIGHrVcojUq",
+          "id": "REEMPLAZAR_CON_TU_CREDENTIAL_ID",
           "name": "Google Sheets OAuth2 API"
         }
       }
@@ -180,7 +179,7 @@
     },
     {
       "parameters": {
-        "sendTo": "ignacionogpa@gmail.com",
+        "sendTo": "owner@example.com",
         "subject": "🔥 Lead CALIENTE — acción requerida",
         "message": "={{$json.htmlBody}}",
         "options": {
@@ -241,7 +240,7 @@
     },
     {
       "parameters": {
-        "sendTo": "ignacionogpa@gmail.com",
+        "sendTo": "owner@example.com",
         "subject": "🟡 Lead TIBIO — seguimiento recomendado",
         "message": "={{$json.htmlBody}}",
         "options": {
@@ -293,7 +292,7 @@
     },
     {
       "parameters": {
-        "sendTo": "ignacionogpa@gmail.com",
+        "sendTo": "owner@example.com",
         "subject": "⚠️ Error en Calificador de Leads — revisar ahora",
         "message": "={{$json.htmlError}}",
         "options": {
@@ -328,7 +327,7 @@
     },
     {
       "parameters": {
-        "content": "## ⚙️ Credenciales necesarias\n\nAntes de activar, configurá en n8n:\n\n**Settings → Credentials → New**\n\n1. **Gmail OAuth2** (x4 nodos)\n   → Email al Lead\n   → Alerta al Dueño (CALIENTE)\n   → Alerta Lead TIBIO\n   → Alerta Error\n\n2. **Anthropic API** ✅ ya configurada\n\n3. **Google Sheets OAuth2** ✅ ya configurada\n\nReemplazá `REEMPLAZAR_CON_TU_CREDENTIAL_ID` con el ID real de tu credencial Gmail.",
+        "content": "## ⚙️ Credenciales necesarias\n\nAntes de activar, configurá en n8n:\n\n**Settings → Credentials → New**\n\n1. **Gmail OAuth2** (x4 nodos)\n   → Email al Lead\n   → Alerta al Dueño (CALIENTE)\n   → Alerta Lead TIBIO\n   → Alerta Error\n\n2. **Anthropic API**\n\n3. **Google Sheets OAuth2**\n\nReemplazá `REEMPLAZAR_CON_TU_CREDENTIAL_ID` con el ID real de cada credencial.",
         "height": 280,
         "width": 340,
         "color": 3
@@ -411,8 +410,7 @@
   },
   "versionId": "v3-fixed-2026-05-17",
   "meta": {
-    "templateCredsSetupCompleted": false,
-    "instanceId": "c4251aa8a8ac87b16d15c56cc78933f3b12e612e5022c4ebabdc15e41a72277f"
+    "templateCredsSetupCompleted": false
   },
   "id": "6fGHxoi3UJFST3KC",
   "tags": [

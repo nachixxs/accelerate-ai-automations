@@ -9,7 +9,7 @@ Workflow que recibe leads via webhook, los califica con Claude y notifica al due
 ```
 Webhook recibe lead (nombre, email, mensaje)
         ↓
-Claude Sonnet 4.6 califica el lead
+Claude Sonnet 4.5 califica el lead
         ↓
 Guarda en Google Sheets con todos los datos
         ↓
@@ -47,8 +47,8 @@ Error Trigger → alerta si algo falla ⚠️
 ## Cómo importar
 
 1. `Workflows → Import from file`
-2. Seleccionás `Demo_1_Calificador_Leads_v3.json`
-3. Reemplazás `REEMPLAZAR_CON_TU_CREDENTIAL_ID` con tu ID real de Gmail en los 4 nodos de Gmail
+2. Seleccionás `Demo_1_-_Calificador_de_Leads_v3.json`
+3. Reemplazás `REEMPLAZAR_CON_TU_CREDENTIAL_ID` con el ID real de cada credencial: Anthropic, Google Sheets y los 4 nodos de Gmail
 4. Actualizás el ID de tu Google Sheet en el nodo "Guardar en Sheets"
 5. Activás el workflow
 
